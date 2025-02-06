@@ -51,7 +51,13 @@
 				"inputs": [
 					{
 						"referenceName": "Parquet1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": {
+								"value": "pet_lic_data.parquet",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"outputs": [
@@ -106,14 +112,20 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DelimitedText",
+						"referenceName": "DelimitedText1",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
 						"referenceName": "Parquet1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": {
+								"value": "pet_lic_data.parquet",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
