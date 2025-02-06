@@ -4,7 +4,7 @@
 		"description": "Convert from tsv to parquet",
 		"activities": [
 			{
-				"name": "tsvtoSnowflake",
+				"name": "parquettoSnowflake",
 				"type": "Copy",
 				"dependsOn": [
 					{
