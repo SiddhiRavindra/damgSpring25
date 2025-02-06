@@ -4,11 +4,11 @@
 		"description": "Convert from tsv to parquet",
 		"activities": [
 			{
-				"name": "bronzetosilver",
+				"name": "tsvtoSnowflake",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "silverparquet",
+						"activity": "tvstoparquet",
 						"dependencyConditions": [
 							"Completed"
 						]
@@ -85,7 +85,7 @@
 				]
 			},
 			{
-				"name": "silverparquet",
+				"name": "tvstoparquet",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
