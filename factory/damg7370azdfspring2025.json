@@ -1,5 +1,11 @@
 {
 	"name": "damg7370azdfspring2025",
+	"properties": {
+		"globalConfigurations": {
+			"factoryStagingLSReferenceName": "AzureBlobStorageForSnowflake",
+			"factoryStagingLSType": "LinkedServiceReference"
+		}
+	},
 	"location": "eastus",
 	"identity": {
 		"type": "SystemAssigned",
