@@ -1,0 +1,97 @@
+{
+	"name": "ParquetNY",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "NYPDBUGIXFINAL1 1.parquet",
+				"fileSystem": "gold"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "ARREST_KEY",
+				"type": "UTF8"
+			},
+			{
+				"name": "PD_CD",
+				"type": "INT32"
+			},
+			{
+				"name": "PD_DESC",
+				"type": "UTF8"
+			},
+			{
+				"name": "KY_CD",
+				"type": "INT32"
+			},
+			{
+				"name": "OFNS_DESC",
+				"type": "UTF8"
+			},
+			{
+				"name": "LAW_CODE",
+				"type": "UTF8"
+			},
+			{
+				"name": "LAW_CAT_CD",
+				"type": "UTF8"
+			},
+			{
+				"name": "ARREST_BORO",
+				"type": "UTF8"
+			},
+			{
+				"name": "ARREST_PRECINCT",
+				"type": "INT32"
+			},
+			{
+				"name": "JURISDICTION_CODE",
+				"type": "INT32"
+			},
+			{
+				"name": "AGE_GROUP",
+				"type": "UTF8"
+			},
+			{
+				"name": "PERP_SEX",
+				"type": "UTF8"
+			},
+			{
+				"name": "PERP_RACE",
+				"type": "UTF8"
+			},
+			{
+				"name": "X_COORD_CD",
+				"type": "INT64"
+			},
+			{
+				"name": "Y_COORD_CD",
+				"type": "INT64"
+			},
+			{
+				"name": "LATITUDE",
+				"type": "FLOAT"
+			},
+			{
+				"name": "LONGITUDE",
+				"type": "FLOAT"
+			},
+			{
+				"name": "NEWGEOREFERENCEDCOLUMN",
+				"type": "UTF8"
+			},
+			{
+				"name": "ARREST_DATE_NEW",
+				"type": "DATE"
+			}
+		]
+	}
+}

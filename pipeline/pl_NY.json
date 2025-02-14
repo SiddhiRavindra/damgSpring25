@@ -1,0 +1,227 @@
+{
+	"name": "pl_NY",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ParquetSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "ParquetReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorageForSnowflake",
+							"type": "LinkedServiceReference"
+						},
+						"path": "nycrimedata"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ARREST_KEY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ARREST_KEY"
+								}
+							},
+							{
+								"source": {
+									"name": "ARREST_DATE_NEW",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "ARREST_DATE"
+								}
+							},
+							{
+								"source": {
+									"name": "PD_CD",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "PD_CD"
+								}
+							},
+							{
+								"source": {
+									"name": "PD_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PD_DESC"
+								}
+							},
+							{
+								"source": {
+									"name": "KY_CD",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "KY_CD"
+								}
+							},
+							{
+								"source": {
+									"name": "OFNS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "OFNS_DESC"
+								}
+							},
+							{
+								"source": {
+									"name": "LAW_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "LAW_CODE"
+								}
+							},
+							{
+								"source": {
+									"name": "LAW_CAT_CD",
+									"type": "String"
+								},
+								"sink": {
+									"name": "LAW_CAT_CD"
+								}
+							},
+							{
+								"source": {
+									"name": "ARREST_BORO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ARREST_BORO"
+								}
+							},
+							{
+								"source": {
+									"name": "ARREST_PRECINCT",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "ARREST_PRECINCT"
+								}
+							},
+							{
+								"source": {
+									"name": "JURISDICTION_CODE",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "JURISDICTION_CODE"
+								}
+							},
+							{
+								"source": {
+									"name": "AGE_GROUP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "AGE_GROUP"
+								}
+							},
+							{
+								"source": {
+									"name": "PERP_SEX",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PERP_SEX"
+								}
+							},
+							{
+								"source": {
+									"name": "PERP_RACE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PERP_RACE"
+								}
+							},
+							{
+								"source": {
+									"name": "X_COORD_CD",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "X_COORD_CD"
+								}
+							},
+							{
+								"source": {
+									"name": "Y_COORD_CD",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "Y_COORD_CD"
+								}
+							},
+							{
+								"source": {
+									"name": "LATITUDE",
+									"type": "Single"
+								},
+								"sink": {
+									"name": "LATITUDE"
+								}
+							},
+							{
+								"source": {
+									"name": "LONGITUDE",
+									"type": "Single"
+								},
+								"sink": {
+									"name": "LONGITUDE"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ParquetNY",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SnowflakeTableNYCrime",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
