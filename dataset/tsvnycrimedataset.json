@@ -1,0 +1,28 @@
+{
+	"name": "tsvnycrimedataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "NYPD_Arrest_Data__Year_to_Date__20250213.tsv",
+				"fileSystem": "gold"
+			},
+			"columnDelimiter": "\t",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ARREST_KEY\tARREST_DATE\tPD_CD\tPD_DESC\tKY_CD\tOFNS_DESC\tLAW_CODE\tLAW_CAT_CD\tARREST_BORO\tARREST_PRECINCT\tJURISDICTION_CODE\tAGE_GROUP\tPERP_SEX\tPERP_RACE\tX_COORD_CD\tY_COORD_CD\tLatitude\tLongitude\tNew Georeferenced Column",
+				"type": "String"
+			}
+		]
+	}
+}

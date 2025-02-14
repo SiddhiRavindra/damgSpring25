@@ -1,0 +1,129 @@
+{
+	"name": "getscource_clean",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "tsvnycrimedataset",
+						"type": "DatasetReference"
+					},
+					"name": "sourcetsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SnowflakeTableNYCrime",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSnowflake"
+				}
+			],
+			"transformations": [
+				{
+					"name": "updatingColumns"
+				},
+				{
+					"name": "pickRequiredColumns"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     job_id as string (\"10\")",
+				"}",
+				"source(output(",
+				"          ARREST_KEY as integer,",
+				"          ARREST_DATE as string,",
+				"          PD_CD as short,",
+				"          PD_DESC as string,",
+				"          KY_CD as short,",
+				"          OFNS_DESC as string,",
+				"          LAW_CODE as string,",
+				"          LAW_CAT_CD as string,",
+				"          ARREST_BORO as string,",
+				"          ARREST_PRECINCT as short,",
+				"          JURISDICTION_CODE as short,",
+				"          AGE_GROUP as string,",
+				"          PERP_SEX as string,",
+				"          PERP_RACE as string,",
+				"          X_COORD_CD as integer,",
+				"          Y_COORD_CD as integer,",
+				"          Latitude as double,",
+				"          Longitude as double,",
+				"          {New Georeferenced Column} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcetsv",
+				"sourcetsv derive(ARREST_DATE = toDate(ARREST_DATE, 'MM/dd/yyyy'),",
+				"          AGE_GROUPS = iifNull(AGE_GROUP, 'UNKNOWN'),",
+				"          PERP_SEX = iifNull(PERP_SEX, 'U'),",
+				"          PERP_RACE = iifNull(PERP_RACE, 'UNKNOWN'),",
+				"          PD_DESC = iifNull(PD_DESC, 'UNKNOWN'),",
+				"          OFNS_DESC = iif(LAW_CAT_CD == '9' || LAW_CAT_CD == 'I' || OFNS_DESC == '(null)' || OFNS_DESC == 'null', 'UNKNOWN', OFNS_DESC),",
+				"          LAW_CAT_CD = case(isNull(LAW_CODE), 'UNKNOWN', trim(upper(LAW_CODE))),",
+				"          di_job_id = $job_id,",
+				"          di_load_dt = currentDate()) ~> updatingColumns",
+				"updatingColumns select(mapColumn(",
+				"          ARREST_KEY,",
+				"          ARREST_DATE,",
+				"          PD_CD,",
+				"          PD_DESC,",
+				"          KY_CD,",
+				"          OFNS_DESC,",
+				"          LAW_CODE,",
+				"          LAW_CAT_CD,",
+				"          ARREST_BORO,",
+				"          ARREST_PRECINCT,",
+				"          JURISDICTION_CODE,",
+				"          AGE_GROUP,",
+				"          PERP_SEX,",
+				"          PERP_RACE,",
+				"          X_COORD_CD,",
+				"          Y_COORD_CD,",
+				"          Latitude,",
+				"          Longitude,",
+				"          {New Georeferenced Column},",
+				"          AGE_GROUPS",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> pickRequiredColumns",
+				"pickRequiredColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ARREST_KEY as string,",
+				"          ARREST_DATE as string,",
+				"          PD_CD as string,",
+				"          PD_DESC as string,",
+				"          KY_CD as string,",
+				"          OFNS_DESC as string,",
+				"          LAW_CODE as string,",
+				"          LAW_CAT_CD as string,",
+				"          ARREST_BORO as string,",
+				"          ARREST_PRECINCT as string,",
+				"          JURISDICTION_CODE as string,",
+				"          AGE_GROUP as string,",
+				"          PERP_SEX as string,",
+				"          PERP_RACE as string,",
+				"          X_COORD_CD as string,",
+				"          Y_COORD_CD as string,",
+				"          LATITUDE as string,",
+				"          LONGITUDE as string,",
+				"          GEOCODED_COLUMN as string,",
+				"          DI_JOB_ID as string,",
+				"          DI_LOAD_DT as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true) ~> sinkSnowflake"
+			]
+		}
+	}
+}
