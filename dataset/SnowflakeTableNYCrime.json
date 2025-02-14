@@ -108,8 +108,8 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "NYCRIMEANALYSIS_DB_Schema",
-			"table": "NYCRIME_ARREST_STAGE"
+			"schema": "NYCRIMEANALYSIS_DB_SCHEMA",
+			"table": "FACT_ARRESTS_NEW"
 		}
 	}
 }
