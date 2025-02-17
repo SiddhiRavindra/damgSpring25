@@ -1,0 +1,28 @@
+{
+	"name": "Pettsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorageForSnowflake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Seattle_Pet_Licenses_20250205.tsv",
+				"container": "damg"
+			},
+			"columnDelimiter": "\t",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "License Issue Date\tLicense Number\tAnimal's Name\tSpecies\tPrimary Breed\tSecondary Breed\tZIP Code",
+				"type": "String"
+			}
+		]
+	}
+}

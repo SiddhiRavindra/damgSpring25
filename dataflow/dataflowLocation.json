@@ -41,7 +41,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceStage",
-				"surrogateKeyLocation derive(DI_JOB_ID = \"10\",",
+				"surrogateKeyLocation derive(DI_JOB_ID = uuid(),",
 				"          DI_LOAD_DT = currentTimestamp()) ~> derivedColumn",
 				"sourceStage keyGenerate(output(LOCATION_SK as long),",
 				"     startAt: 1L,",
