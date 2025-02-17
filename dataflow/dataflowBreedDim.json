@@ -1,0 +1,143 @@
+{
+	"name": "dataflowBreedDim",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SnowflakeTable",
+						"type": "DatasetReference"
+					},
+					"name": "sourceStage"
+				},
+				{
+					"dataset": {
+						"referenceName": "SnowflakeTableBreed",
+						"type": "DatasetReference"
+					},
+					"name": "sourceBreedMax"
+				},
+				{
+					"dataset": {
+						"referenceName": "SnowflakeTableBreed",
+						"type": "DatasetReference"
+					},
+					"name": "sourceBreed"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SnowflakeTableBreed",
+						"type": "DatasetReference"
+					},
+					"name": "sinkBreed"
+				}
+			],
+			"transformations": [
+				{
+					"name": "joinWithBreedMax"
+				},
+				{
+					"name": "aggregate"
+				},
+				{
+					"name": "joinBreedStage"
+				},
+				{
+					"name": "filter"
+				},
+				{
+					"name": "surrogateKey"
+				},
+				{
+					"name": "derivedColumn"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          LICENSE_ISSUE_DATE as string,",
+				"          LICENSE_NUMBER as string,",
+				"          ANIMAL_NAME as string,",
+				"          SPECIES as string,",
+				"          PRIMARY_BREED as string,",
+				"          SECONDARY_BREED as string,",
+				"          ZIP_CODE as string,",
+				"          DI_JOB_ID as string,",
+				"          DI_LOAD_DT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> sourceStage",
+				"source(output(",
+				"          MAXBREEDSK as decimal(10,0)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     query: 'Select NVL(MAX(BREED_SK),0) as MAXBREEDSK from DAMGSPRING25_DB_SCHEMA.BREED_DIM',",
+				"     format: 'query') ~> sourceBreedMax",
+				"source(output(",
+				"          BREED_SK as string,",
+				"          START_DT as string,",
+				"          END_DT as string,",
+				"          IS_CURRENT as string,",
+				"          BREED_DK as string,",
+				"          SPECIES_NAME as string,",
+				"          PRIMARY_BREED_NAME as string,",
+				"          SECONDARY_BREED_NAME as string,",
+				"          DI_JOB_ID as string,",
+				"          DI_LOAD_DATE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> sourceBreed",
+				"sourceStage, sourceBreedMax join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinWithBreedMax",
+				"joinWithBreedMax aggregate(groupBy(PRIMARY_BREED,",
+				"          SECONDARY_BREED,",
+				"          SPECIES,",
+				"          MAXBREEDSK),",
+				"     CountRow = count(LICENSE_NUMBER)) ~> aggregate",
+				"aggregate, sourceBreed join(SECONDARY_BREED == SECONDARY_BREED_NAME",
+				"     && PRIMARY_BREED == PRIMARY_BREED_NAME",
+				"     && SPECIES == SPECIES_NAME,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinBreedStage",
+				"joinBreedStage filter(isNull(SPECIES)&&isNull(PRIMARY_BREED)&&isNull(SECONDARY_BREED)) ~> filter",
+				"derivedColumn keyGenerate(output(BREED_SK as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey",
+				"filter derive(DI_JOB_ID = ERROR_FUNCTION(''),",
+				"          DI_LOAD_DATE = currentTimestamp()) ~> derivedColumn",
+				"surrogateKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          BREED_SK as string,",
+				"          START_DT as string,",
+				"          END_DT as string,",
+				"          IS_CURRENT as string,",
+				"          BREED_DK as string,",
+				"          SPECIES_NAME as string,",
+				"          PRIMARY_BREED_NAME as string,",
+				"          SECONDARY_BREED_NAME as string,",
+				"          DI_JOB_ID as string,",
+				"          DI_LOAD_DATE as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true) ~> sinkBreed"
+			]
+		}
+	}
+}
