@@ -27,6 +27,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"jobid": {
+				"type": "string",
+				"defaultValue": "substring(pipeline.RunId(),1,10)"
+			}
+		},
 		"annotations": []
 	}
 }

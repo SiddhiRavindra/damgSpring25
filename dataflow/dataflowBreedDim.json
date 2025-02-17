@@ -56,6 +56,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     jobid as string ($jobid)",
+				"}",
 				"source(output(",
 				"          LICENSE_ISSUE_DATE as string,",
 				"          LICENSE_NUMBER as string,",
@@ -113,7 +116,7 @@
 				"derivedColumn keyGenerate(output(BREED_SK as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey",
-				"filter derive(DI_JOB_ID = ERROR_FUNCTION(''),",
+				"filter derive(DI_JOB_ID = \"10\",",
 				"          DI_LOAD_DATE = currentTimestamp()) ~> derivedColumn",
 				"surrogateKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
