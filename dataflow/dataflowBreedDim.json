@@ -139,7 +139,15 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     stageInsert: true) ~> sinkBreed"
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          BREED_SK,",
+				"          SPECIES_NAME,",
+				"          PRIMARY_BREED_NAME,",
+				"          SECONDARY_BREED_NAME,",
+				"          DI_JOB_ID,",
+				"          DI_LOAD_DATE",
+				"     )) ~> sinkBreed"
 			]
 		}
 	}

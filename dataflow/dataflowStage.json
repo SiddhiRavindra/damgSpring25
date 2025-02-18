@@ -6,10 +6,10 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "NewPettsv",
+						"referenceName": "newPetLisData",
 						"type": "DatasetReference"
 					},
-					"name": "sourceStage"
+					"name": "source"
 				}
 			],
 			"sinks": [
@@ -18,15 +18,15 @@
 						"referenceName": "SnowflakeTable",
 						"type": "DatasetReference"
 					},
-					"name": "sinkStage"
+					"name": "sinkstg"
 				}
 			],
 			"transformations": [
 				{
-					"name": "TransposeColumn"
+					"name": "derivedColumn1"
 				},
 				{
-					"name": "PickRequiredColumns"
+					"name": "DerivedCol"
 				}
 			],
 			"scriptLines": [
@@ -34,39 +34,39 @@
 				"     jobid as string (uuid())",
 				"}",
 				"source(output(",
-				"          License_Issue_Date as string,",
-				"          License_Number as string,",
-				"          Animals_Name as string,",
+				"          {License Issue Date} as string,",
+				"          {License Number} as string,",
+				"          {Animal's Name} as string,",
 				"          Species as string,",
-				"          Primary_Breed as string,",
-				"          Secondary_Breed as string,",
-				"          ZIP_Code as integer",
+				"          {Primary Breed} as string,",
+				"          {Secondary Breed} as string,",
+				"          {ZIP Code} as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> sourceStage",
-				"sourceStage derive(License_Issue_Date = toDate(License_Issue_Date,'MMMM dd yyyy'),",
-				"          Secondary_Breed = iifNull(Secondary_Breed, 'Unknown'),",
-				"          ZIP_Code = lpad(toString(ZIP_Code), 5, '0'),",
-				"          Species = upper(Species),",
-				"          License_Number = toInteger(translate(License_Number, 'S', '')),",
-				"          Animals_Name = translate(Animals_Name, '0[]', ''),",
-				"          DI_JOB_ID = $jobid,",
-				"          DI_LOAD_DT = currentTimestamp()) ~> TransposeColumn",
-				"TransposeColumn select(mapColumn(",
-				"          License_Issue_Date,",
-				"          License_Number,",
-				"          Animals_Name,",
-				"          Species,",
-				"          Primary_Breed,",
-				"          Secondary_Breed,",
-				"          ZIP_Code,",
+				"     ignoreNoFilesFound: false) ~> source",
+				"source derive(LICSENCE_ISSUE_DATE = toDate({License Issue Date},'MMMM dd yy'),",
+				"          SECONDARY_BREED = iifNull({Secondary Breed},'Unknown'),",
+				"          ZIP_CODE = lpad(toString({ZIP Code}),5,'0'),",
+				"          SPECIES = upper(Species),",
+				"          LICENSE_NUMBER = toInteger(translate({License Number},'S','')),",
+				"          DI_JOB_ID = uuid(),",
+				"          DI_LOAD_DT = currentTimestamp(),",
+				"          Animals_Name = translate({Animal's Name}, '0[]', '')) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          PRIMARY_BREED = {Primary Breed},",
+				"          LICSENCE_ISSUE_DATE,",
+				"          SECONDARY_BREED,",
+				"          ZIP_CODE,",
+				"          SPECIES = derivedColumn1@SPECIES,",
+				"          LICENSE_NUMBER,",
 				"          DI_JOB_ID,",
-				"          DI_LOAD_DT",
+				"          DI_LOAD_DT,",
+				"          Animals_Name",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> PickRequiredColumns",
-				"PickRequiredColumns sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: false) ~> DerivedCol",
+				"DerivedCol sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          LICENSE_ISSUE_DATE as string,",
@@ -87,16 +87,16 @@
 				"     format: 'table',",
 				"     stageInsert: true,",
 				"     mapColumn(",
-				"          LICENSE_ISSUE_DATE = License_Issue_Date,",
-				"          LICENSE_NUMBER = License_Number,",
+				"          LICENSE_ISSUE_DATE = LICSENCE_ISSUE_DATE,",
+				"          LICENSE_NUMBER,",
 				"          ANIMAL_NAME = Animals_Name,",
-				"          SPECIES = Species,",
-				"          PRIMARY_BREED = Primary_Breed,",
-				"          SECONDARY_BREED = Secondary_Breed,",
-				"          ZIP_CODE = ZIP_Code,",
+				"          SPECIES,",
+				"          PRIMARY_BREED,",
+				"          SECONDARY_BREED,",
+				"          ZIP_CODE,",
 				"          DI_JOB_ID,",
 				"          DI_LOAD_DT",
-				"     )) ~> sinkStage"
+				"     )) ~> sinkstg"
 			]
 		}
 	}
