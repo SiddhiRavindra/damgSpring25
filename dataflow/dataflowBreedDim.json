@@ -57,7 +57,7 @@
 			],
 			"scriptLines": [
 				"parameters{",
-				"     jobid as string ($jobid)",
+				"     jobid as string (uuid())",
 				"}",
 				"source(output(",
 				"          LICENSE_ISSUE_DATE as string,",
