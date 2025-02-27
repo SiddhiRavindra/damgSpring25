@@ -62,7 +62,10 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "dataflowLocation",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"jobid": "uuid()"
+						}
 					},
 					"compute": {
 						"coreCount": 8,
