@@ -133,7 +133,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select",
 				"surrogateKey derive(BREED_SK = MAXBREEDSK+RowNum,",
-				"          DI_JOB_ID = uuid(),",
+				"          DI_JOB_ID = $jobid,",
 				"          DI_LOAD_DATE = currentTimestamp()) ~> derivedColumnMaxBreed",
 				"derivedColumnMaxBreed sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
