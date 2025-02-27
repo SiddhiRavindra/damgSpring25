@@ -135,6 +135,12 @@
 				"defaultValue": "uuid()"
 			}
 		},
+		"variables": {
+			"DI_JOB_ID": {
+				"type": "String",
+				"defaultValue": "uuid()"
+			}
+		},
 		"annotations": []
 	}
 }
