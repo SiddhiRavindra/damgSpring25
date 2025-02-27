@@ -5,6 +5,8 @@
 			{
 				"name": "DataflowBreed",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DataFlowStage",
@@ -24,7 +26,10 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "dataflowBreedDim",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"jobid": "uuid()"
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -36,8 +41,6 @@
 			{
 				"name": "Data flowLocation",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DataflowBreed",

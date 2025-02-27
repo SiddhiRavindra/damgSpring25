@@ -47,7 +47,7 @@
 		],
 		"typeProperties": {
 			"schema": "DAMGSPRING25_DB_SCHEMA",
-			"table": "PET_LICENSE_STAGE"
+			"table": "PET_LICENSE_STAGEV2"
 		}
 	}
 }
