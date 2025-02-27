@@ -118,7 +118,7 @@
 				"select keyGenerate(output(RowNum as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey",
-				"filter derive(DI_JOB_ID = uuid(),",
+				"filter derive(DI_JOB_ID = $jobid,",
 				"          DI_LOAD_DATE = currentTimestamp()) ~> derivedColumn",
 				"derivedColumn select(mapColumn(",
 				"          PRIMARY_BREED = aggregate@PRIMARY_BREED,",

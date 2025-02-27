@@ -50,7 +50,7 @@
 				"          ZIP_CODE = lpad(toString({ZIP Code}),5,'0'),",
 				"          SPECIES = upper(Species),",
 				"          LICENSE_NUMBER = toInteger(translate({License Number},'S','')),",
-				"          DI_JOB_ID = uuid(),",
+				"          DI_JOB_ID = $jobid,",
 				"          DI_LOAD_DT = currentTimestamp(),",
 				"          Animals_Name = translate({Animal's Name}, '0[]', '')) ~> derivedColumn1",
 				"derivedColumn1 select(mapColumn(",

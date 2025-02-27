@@ -30,6 +30,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     jobid as string (uuid())",
+				"}",
 				"source(output(",
 				"          state_fips as string,",
 				"          state as string,",
@@ -41,7 +44,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceStage",
-				"surrogateKeyLocation derive(DI_JOB_ID = uuid(),",
+				"surrogateKeyLocation derive(DI_JOB_ID = $jobid,",
 				"          DI_LOAD_DT = currentTimestamp()) ~> derivedColumn",
 				"sourceStage keyGenerate(output(LOCATION_SK as long),",
 				"     startAt: 1L,",

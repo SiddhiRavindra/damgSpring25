@@ -119,7 +119,10 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "dataflowStage",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"jobid": "uuid()"
+						}
 					},
 					"compute": {
 						"coreCount": 8,
