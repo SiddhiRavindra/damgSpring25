@@ -41,6 +41,8 @@
 			{
 				"name": "Data flowLocation",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DataflowBreed",
@@ -72,8 +74,6 @@
 			{
 				"name": "DataflowFact",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Data flowLocation",

@@ -28,9 +28,7 @@
 			},
 			{
 				"name": "ZIP_CODE",
-				"type": "NUMBER",
-				"precision": 10,
-				"scale": 0
+				"type": "VARCHAR"
 			},
 			{
 				"name": "DI_JOB_ID",

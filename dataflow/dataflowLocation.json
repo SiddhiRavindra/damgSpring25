@@ -31,7 +31,7 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          state_fips as short,",
+				"          state_fips as string,",
 				"          state as string,",
 				"          state_abbr as string,",
 				"          zipcode as string,",
