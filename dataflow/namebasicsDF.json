@@ -14,6 +14,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "NamseBasicStgWorkshop",
+						"type": "DatasetReference"
+					},
 					"name": "sink"
 				}
 			],
@@ -47,16 +51,16 @@
 				"          primaryName = primaryName,",
 				"          birthYear = birthYear,",
 				"          deathYear = deathYear,",
-				"          primaryProfession = split(knownForTitles,','),",
-				"          knownForTitles = split(primaryProfession,',')) ~> derivedColumn",
-				"derivedColumn foldDown(unroll(primaryProfession, knownForTitles),",
+				"          KNOWNFORTITLES = split(knownForTitles,','),",
+				"          PRIMARYPROFESSION = split(primaryProfession,',')) ~> derivedColumn",
+				"derivedColumn foldDown(unrollMultiple(KNOWNFORTITLES,PRIMARYPROFESSION),",
 				"     mapColumn(",
-				"          nconst,",
-				"          primaryName,",
-				"          birthYear,",
-				"          deathYear,",
-				"          primaryProfession,",
-				"          knownForTitles,",
+				"          NCONST = nconst,",
+				"          PRIMARYNAME = primaryName,",
+				"          BIRTHYEAR = birthYear,",
+				"          DEATHYEAR = deathYear,",
+				"          KNOWNFORTITLES = derivedColumn@KNOWNFORTITLES,",
+				"          PRIMARYPROFESSION = derivedColumn@PRIMARYPROFESSION,",
 				"          DI_JOB_ID,",
 				"          DI_LOAD_DT",
 				"     ),",
@@ -64,8 +68,34 @@
 				"     skipDuplicateMapOutputs: false) ~> flatten",
 				"flatten sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink"
+				"     input(",
+				"          NAME_BASICS_SK as decimal(38,0),",
+				"          NCONST as string,",
+				"          PRIMARYNAME as string,",
+				"          BIRTHYEAR as decimal(38,0),",
+				"          DEATHYEAR as decimal(38,0),",
+				"          PRIMARYPROFESSION as string,",
+				"          KNOWNFORTITLES as string,",
+				"          DI_JOB_ID as string,",
+				"          DI_LOAD_DATE as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          NCONST,",
+				"          PRIMARYNAME,",
+				"          BIRTHYEAR,",
+				"          DEATHYEAR,",
+				"          PRIMARYPROFESSION,",
+				"          KNOWNFORTITLES,",
+				"          DI_JOB_ID,",
+				"          DI_LOAD_DATE = DI_LOAD_DT",
+				"     )) ~> sink"
 			]
 		}
 	}
