@@ -1,0 +1,72 @@
+{
+	"name": "namebasicsDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ParquetNameBasics",
+						"type": "DatasetReference"
+					},
+					"name": "source"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn"
+				},
+				{
+					"name": "flatten"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     jobid as string (uuid())",
+				"}",
+				"source(output(",
+				"          nconst as string,",
+				"          primaryName as string,",
+				"          birthYear as long,",
+				"          deathYear as long,",
+				"          primaryProfession as string,",
+				"          knownForTitles as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> source",
+				"source derive(DI_JOB_ID = $jobid,",
+				"          DI_LOAD_DT = currentTimestamp(),",
+				"          nconst = nconst,",
+				"          primaryName = primaryName,",
+				"          birthYear = birthYear,",
+				"          deathYear = deathYear,",
+				"          primaryProfession = split(knownForTitles,','),",
+				"          knownForTitles = split(primaryProfession,',')) ~> derivedColumn",
+				"derivedColumn foldDown(unroll(primaryProfession, knownForTitles),",
+				"     mapColumn(",
+				"          nconst,",
+				"          primaryName,",
+				"          birthYear,",
+				"          deathYear,",
+				"          primaryProfession,",
+				"          knownForTitles,",
+				"          DI_JOB_ID,",
+				"          DI_LOAD_DT",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten",
+				"flatten sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink"
+			]
+		}
+	}
+}
