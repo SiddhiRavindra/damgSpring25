@@ -63,7 +63,8 @@
 						"linkedServiceName": {
 							"referenceName": "IMDBBlobStorage",
 							"type": "LinkedServiceReference"
-						}
+						},
+						"path": "gold"
 					},
 					"translator": {
 						"type": "TabularTranslator",
