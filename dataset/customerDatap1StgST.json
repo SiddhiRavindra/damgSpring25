@@ -1,0 +1,31 @@
+{
+	"name": "customerDatap1StgST",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [
+			{
+				"name": "CUSTOMER_ID",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "CUSTOMER_NAME",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "BILL_TO",
+				"type": "VARCHAR"
+			}
+		],
+		"typeProperties": {
+			"schema": "DAMGSPRING25_DB_SCHEMA",
+			"table": "CUSTOMER_DATA_STAGE_PART1"
+		}
+	}
+}
