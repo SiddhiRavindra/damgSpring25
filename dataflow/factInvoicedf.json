@@ -1,0 +1,39 @@
+{
+	"name": "factInvoicedf",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "factInvoiceST",
+						"type": "DatasetReference"
+					},
+					"name": "sourceFactInvoice"
+				},
+				{
+					"name": "sourceCustomer"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          INVOICE_SK as decimal(38,0),",
+				"          INVOICE_ID as decimal(38,0),",
+				"          CUSTOMER_ID as decimal(38,0),",
+				"          INVOICE_DT as date,",
+				"          TOTAL_PRODUCT_CNT as decimal(38,0),",
+				"          TOTAL_PRODUCT_COST as double,",
+				"          DI_CREATEDDT as timestamp,",
+				"          PID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> sourceFactInvoice",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> sourceCustomer"
+			]
+		}
+	}
+}

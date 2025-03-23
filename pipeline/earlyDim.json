@@ -256,7 +256,7 @@
 					},
 					"sink": {
 						"type": "SnowflakeV2Sink",
-						"preCopyScript": "INSERT INTO dim_customer (customer_id, customer_name, DI_CreatedDt)\nSELECT DISTINCT sales.customer_id, 'Unknown', CURRENT_TIMESTAMP\nFROM DAMGSPRING25_DB.DAMGSPRING25_DB_SCHEMA.SALES_DATA_STAGE sales\nLEFT JOIN YOUR_DATABASE.YOUR_SCHEMA.DIM_CUSTOMER dc \n    ON sales.customer_id = dc.customer_id\nWHERE dc.customer_id IS NULL;",
+						"preCopyScript": "INSERT INTO DAMGSPRING25_DB.DAMGSPRING25_DB_SCHEMA.DIM_CUSTOMER (customer_sk, customer_id, customer_name, DI_CreatedDt)\nSELECT DISTINCT \n    ROW_NUMBER() OVER (ORDER BY sales.customer_id) AS customer_sk, -- Ensure a unique primary key\n    COALESCE(sales.customer_id, -1),  \n    COALESCE('Unknown', 'Not Available'),  \n    COALESCE(CURRENT_TIMESTAMP, '1970-01-01 00:00:00')  \nFROM DAMGSPRING25_DB.DAMGSPRING25_DB_SCHEMA.SALES_DATA_STAGE sales\nLEFT JOIN DAMGSPRING25_DB.DAMGSPRING25_DB_SCHEMA.DIM_CUSTOMER dc \nON sales.customer_id = dc.customer_id\nWHERE dc.customer_id IS NULL;\n",
 						"importSettings": {
 							"type": "SnowflakeImportCopyCommand"
 						}
@@ -281,6 +281,30 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "factInvoicedf",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "factInvoicedf",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
