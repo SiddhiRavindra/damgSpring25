@@ -5,6 +5,8 @@
 			{
 				"name": "customerdataPart1",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:30:00",
@@ -85,7 +87,13 @@
 							"type": "SnowflakeImportCopyCommand"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorageForSnowflake",
+							"type": "LinkedServiceReference"
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -132,7 +140,13 @@
 							"type": "SnowflakeImportCopyCommand"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorageForSnowflake",
+							"type": "LinkedServiceReference"
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -143,6 +157,47 @@
 				"outputs": [
 					{
 						"referenceName": "customerDatap2StgST",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "loadDimPart1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"preCopyScript": "UPDATE dim_customer dc\nSET \n    customer_name = stg.customer_name,\n    DI_CreatedDt = CURRENT_TIMESTAMP\nFROM customer_data_stage_part2 stg\nWHERE dc.customer_id = stg.customer_id\nAND dc.customer_name = 'Unknown';\n",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "customerDatap1StgST",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "customerPart1Dim",
 						"type": "DatasetReference"
 					}
 				]
