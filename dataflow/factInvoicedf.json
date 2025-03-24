@@ -40,13 +40,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink3Dim"
-				},
-				{
-					"dataset": {
-						"referenceName": "customerPart1Dim",
-						"type": "DatasetReference"
-					},
-					"name": "sink3"
 				}
 			],
 			"transformations": [
@@ -93,19 +86,20 @@
 				"     validateSchema: false,",
 				"     format: 'table') ~> sourceCustomer",
 				"surrogateKey1, sourceCustomer lookup(sourceSalesDataStg@CUSTOMER_ID == sourceCustomer@CUSTOMER_ID,",
-				"     multiple: false,",
-				"     pickup: 'any',",
-				"     broadcast: 'auto')~> lookup1",
-				"split@matchedRows derive(inferred_flag = iif(isNull(split@matchedRows@CUSTOMER_ID),1,0)) ~> derivedColumn2",
+				"     multiple: true,",
+				"     broadcast: 'auto',",
+				"     pickup: 'any')~> lookup1",
+				"split@matchedRows derive(inferred_flag = iif(isNull(split@matchedRows@CUSTOMER_ID),1,0),",
+				"          CUSTOMER_NAME = CUSTOMER_NAME) ~> derivedColumn2",
 				"sourceSalesDataStg keyGenerate(output(rownum as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
 				"lookup1 split(!isNull(CUSTOMER_SK),",
 				"     isNull(CUSTOMER_SK),",
-				"     disjoint: false) ~> split@(matchedRows, unmacthedRows)",
+				"     disjoint: true) ~> split@(matchedRows, unmacthedRows)",
 				"split@unmacthedRows derive(PID = uuid(),",
-				"          CUSTOMER_NAME = iifNull(CUSTOMER_NAME,'UNKNOWN'),",
-				"          DI_CREATEDDT = currentTimestamp()) ~> derivedColumn4",
+				"          DI_CREATEDDT = currentTimestamp(),",
+				"          CUSTOMER_NAME = iifNull(CUSTOMER_NAME,'UNKNOWN')) ~> derivedColumn4",
 				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -131,9 +125,7 @@
 				"          CUSTOMER_ID = split@matchedRows@CUSTOMER_ID,",
 				"          INVOICE_DT = INVOICE_DATE,",
 				"          TOTAL_PRODUCT_CNT,",
-				"          TOTAL_PRODUCT_COST,",
-				"          DI_CREATEDDT,",
-				"          PID",
+				"          TOTAL_PRODUCT_COST",
 				"     )) ~> sink",
 				"derivedColumn4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -185,30 +177,7 @@
 				"          CUSTOMER_NAME,",
 				"          DI_CREATEDDT,",
 				"          PID",
-				"     )) ~> sink3Dim",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     input(",
-				"          CUSTOMER_SK as decimal(38,0),",
-				"          CUSTOMER_ID as decimal(38,0),",
-				"          CUSTOMER_NAME as string,",
-				"          DI_CREATEDDT as timestamp,",
-				"          PID as string",
-				"     ),",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     truncate:true,",
-				"     format: 'table',",
-				"     stageInsert: true,",
-				"     mapColumn(",
-				"          CUSTOMER_SK = rownum,",
-				"          CUSTOMER_ID = split@matchedRows@CUSTOMER_ID,",
-				"          CUSTOMER_NAME,",
-				"          DI_CREATEDDT,",
-				"          PID",
-				"     )) ~> sink3"
+				"     )) ~> sink3Dim"
 			]
 		}
 	}
