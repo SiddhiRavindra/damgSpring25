@@ -6,14 +6,14 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "salesDataStgST",
+						"referenceName": "customerDatap2StgST",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
 				},
 				{
 					"dataset": {
-						"referenceName": "customerPart1Dim",
+						"referenceName": "DimCustomerST",
 						"type": "DatasetReference"
 					},
 					"name": "sourcedimCustomer"
@@ -36,21 +36,14 @@
 					"name": "filter1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "alterRow"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          INVOICE_ID as decimal(38,0),",
 				"          CUSTOMER_ID as decimal(38,0),",
-				"          INVOICE_DATE as date,",
-				"          SHIP_TO as string,",
-				"          SHIP_TO_CITY as string,",
-				"          SHIP_TO_COUNTRY as string,",
-				"          SALESPERSON_PERSON_ID as decimal(38,0),",
-				"          SALESPERSON_NAME as string,",
-				"          TOTAL_PRODUCT_CNT as decimal(38,0),",
-				"          TOTAL_PRODUCT_COST as double",
+				"          CUSTOMER_NAME as string,",
+				"          BILL_TO as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -65,14 +58,15 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'table') ~> sourcedimCustomer",
-				"derivedColumn1, sourcedimCustomer join(source1@CUSTOMER_ID == sourcedimCustomer@CUSTOMER_ID,",
+				"source1, sourcedimCustomer join(source1@CUSTOMER_ID == sourcedimCustomer@CUSTOMER_ID,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 filter(ERROR_FUNCTION('inferred_flag = true')) ~> filter1",
-				"source1 derive(infer = ERROR_FUNCTION('')) ~> derivedColumn1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"join1 filter(isNull(sourcedimCustomer@CUSTOMER_ID)",
+				") ~> filter1",
+				"filter1 alterRow() ~> alterRow",
+				"alterRow sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          CUSTOMER_SK as decimal(38,0),",
