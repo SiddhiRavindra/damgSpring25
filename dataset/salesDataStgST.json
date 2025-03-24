@@ -54,7 +54,9 @@
 			},
 			{
 				"name": "TOTAL_PRODUCT_COST",
-				"type": "FLOAT"
+				"type": "FLOAT",
+				"precision": 38,
+				"scale": 0
 			}
 		],
 		"typeProperties": {

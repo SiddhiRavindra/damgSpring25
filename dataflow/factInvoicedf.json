@@ -6,19 +6,91 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "factInvoiceST",
+						"referenceName": "salesDataStgST",
 						"type": "DatasetReference"
 					},
-					"name": "sourceFactInvoice"
+					"name": "sourceSalesDataStg"
 				},
 				{
+					"dataset": {
+						"referenceName": "DimCustomerST",
+						"type": "DatasetReference"
+					},
 					"name": "sourceCustomer"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "factInvoiceST",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimCustomerST",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumnCust"
+				},
+				{
+					"name": "surrogateKey1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
+				"          INVOICE_ID as decimal(38,0),",
+				"          CUSTOMER_ID as decimal(38,0),",
+				"          INVOICE_DATE as date,",
+				"          SHIP_TO as string,",
+				"          SHIP_TO_CITY as string,",
+				"          SHIP_TO_COUNTRY as string,",
+				"          SALESPERSON_PERSON_ID as decimal(38,0),",
+				"          SALESPERSON_NAME as string,",
+				"          TOTAL_PRODUCT_CNT as decimal(38,0),",
+				"          TOTAL_PRODUCT_COST as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> sourceSalesDataStg",
+				"source(output(",
+				"          CUSTOMER_SK as decimal(38,0),",
+				"          CUSTOMER_ID as decimal(38,0),",
+				"          CUSTOMER_NAME as string,",
+				"          DI_CREATEDDT as timestamp,",
+				"          PID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> sourceCustomer",
+				"derivedColumn1, sourceCustomer lookup(derivedColumn1@CUSTOMER_ID == sourceCustomer@CUSTOMER_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"surrogateKey1 derive(CUSTOMER_ID = iif(isNull(CUSTOMER_ID) || toString(CUSTOMER_ID) == '', -1, toInteger(CUSTOMER_ID))) ~> derivedColumn1",
+				"lookup1 derive(inferred_flag = iif(isNull(derivedColumn1@CUSTOMER_ID),1,0)) ~> derivedColumn2",
+				"sourceCustomer derive(CUSTOMER_NAME = iif(isNull(CUSTOMER_ID), 'Unknown', CUSTOMER_NAME)) ~> derivedColumnCust",
+				"sourceSalesDataStg keyGenerate(output(rownum as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
 				"          INVOICE_SK as decimal(38,0),",
 				"          INVOICE_ID as decimal(38,0),",
 				"          CUSTOMER_ID as decimal(38,0),",
@@ -28,11 +100,45 @@
 				"          DI_CREATEDDT as timestamp,",
 				"          PID as string",
 				"     ),",
-				"     allowSchemaDrift: true,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          INVOICE_SK = rownum,",
+				"          INVOICE_ID,",
+				"          CUSTOMER_ID = derivedColumn1@CUSTOMER_ID,",
+				"          INVOICE_DT = INVOICE_DATE,",
+				"          TOTAL_PRODUCT_CNT,",
+				"          TOTAL_PRODUCT_COST,",
+				"          DI_CREATEDDT,",
+				"          PID",
+				"     )) ~> sink",
+				"derivedColumnCust sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'table') ~> sourceFactInvoice",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> sourceCustomer"
+				"     input(",
+				"          CUSTOMER_SK as decimal(38,0),",
+				"          CUSTOMER_ID as decimal(38,0),",
+				"          CUSTOMER_NAME as string,",
+				"          DI_CREATEDDT as timestamp,",
+				"          PID as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          CUSTOMER_SK,",
+				"          CUSTOMER_ID,",
+				"          CUSTOMER_NAME,",
+				"          DI_CREATEDDT,",
+				"          PID",
+				"     )) ~> sink1"
 			]
 		}
 	}
