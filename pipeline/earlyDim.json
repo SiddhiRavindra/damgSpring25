@@ -178,8 +178,6 @@
 			{
 				"name": "DFLoadDimCustP1",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "customerdatapart2",
@@ -245,8 +243,6 @@
 			{
 				"name": "dimpart2df",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "factInvoicedf",
