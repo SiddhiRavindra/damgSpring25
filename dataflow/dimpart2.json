@@ -65,7 +65,7 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 filter(sourcedimCustomer@CUSTOMER_NAME == 'Unknown'",
 				") ~> filter1",
-				"filter1 alterRow(updateIf(sourcedimCustomer@CUSTOMER_NAME == 'Unknown'\r",
+				"filter1 alterRow(upsertIf(sourcedimCustomer@CUSTOMER_NAME == 'Unknown'\r",
 				")) ~> alterRow",
 				"alterRow sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
