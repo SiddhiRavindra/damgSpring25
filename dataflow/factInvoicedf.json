@@ -173,7 +173,7 @@
 				"     format: 'table',",
 				"     stageInsert: true,",
 				"     mapColumn(",
-				"          CUSTOMER_SK = rownum,",
+				"          CUSTOMER_SK = cust_sk,",
 				"          CUSTOMER_ID = split@unmacthedRows@CUSTOMER_ID,",
 				"          CUSTOMER_NAME,",
 				"          DI_CREATEDDT,",
