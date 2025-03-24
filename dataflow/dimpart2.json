@@ -65,7 +65,8 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 filter(isNull(sourcedimCustomer@CUSTOMER_ID)",
 				") ~> filter1",
-				"filter1 alterRow() ~> alterRow",
+				"filter1 alterRow(updateIf(isNull(sourcedimCustomer@CUSTOMER_NAME)\r",
+				")) ~> alterRow",
 				"alterRow sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -80,9 +81,14 @@
 				"     updateable:false,",
 				"     upsertable:false,",
 				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     stageInsert: true) ~> sink1"
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          CUSTOMER_SK,",
+				"          CUSTOMER_ID = source1@CUSTOMER_ID,",
+				"          CUSTOMER_NAME = source1@CUSTOMER_NAME,",
+				"          DI_CREATEDDT,",
+				"          PID",
+				"     )) ~> sink1"
 			]
 		}
 	}
