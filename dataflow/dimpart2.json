@@ -36,7 +36,7 @@
 					"name": "filter1"
 				},
 				{
-					"name": "alterRow"
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -64,9 +64,8 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"join1 filter(sourcedimCustomer@CUSTOMER_NAME == 'UNKNOWN') ~> filter1",
-				"filter1 alterRow(updateIf(iif(sourcedimCustomer@CUSTOMER_NAME == 'UNKNOWN', true(), false())\r",
-				")) ~> alterRow",
-				"alterRow sink(allowSchemaDrift: true,",
+				"filter1 alterRow(updateIf(toString(sourcedimCustomer@CUSTOMER_NAME)=='UNKNOWN')) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          CUSTOMER_SK as decimal(38,0),",
@@ -75,7 +74,7 @@
 				"          DI_CREATEDDT as timestamp,",
 				"          PID as string",
 				"     ),",
-				"     deletable:false,",
+				"     deletable:true,",
 				"     insertable:true,",
 				"     updateable:true,",
 				"     upsertable:true,",
@@ -84,7 +83,7 @@
 				"     stageInsert: true,",
 				"     mapColumn(",
 				"          CUSTOMER_SK,",
-				"          CUSTOMER_ID = sourcedimCustomer@CUSTOMER_ID,",
+				"          CUSTOMER_ID = source1@CUSTOMER_ID,",
 				"          CUSTOMER_NAME = source1@CUSTOMER_NAME,",
 				"          DI_CREATEDDT,",
 				"          PID",
