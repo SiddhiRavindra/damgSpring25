@@ -29,10 +29,17 @@
 				},
 				{
 					"dataset": {
+						"referenceName": "factInvoiceST",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
 						"referenceName": "DimCustomerST",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sink3Dim"
 				}
 			],
 			"transformations": [
@@ -40,16 +47,16 @@
 					"name": "lookup1"
 				},
 				{
-					"name": "derivedColumn1"
-				},
-				{
 					"name": "derivedColumn2"
 				},
 				{
-					"name": "derivedColumnCust"
+					"name": "surrogateKey1"
 				},
 				{
-					"name": "surrogateKey1"
+					"name": "split"
+				},
+				{
+					"name": "derivedColumn4"
 				}
 			],
 			"scriptLines": [
@@ -78,17 +85,18 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'table') ~> sourceCustomer",
-				"derivedColumn1, sourceCustomer lookup(derivedColumn1@CUSTOMER_ID == sourceCustomer@CUSTOMER_ID,",
+				"surrogateKey1, sourceCustomer lookup(sourceSalesDataStg@CUSTOMER_ID == sourceCustomer@CUSTOMER_ID,",
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
-				"surrogateKey1 derive(CUSTOMER_ID = iif(isNull(CUSTOMER_ID), -1, toInteger(CUSTOMER_ID))) ~> derivedColumn1",
-				"lookup1 derive(inferred_flag = iif(isNull(derivedColumn1@CUSTOMER_ID),1,0)) ~> derivedColumn2",
-				"sourceCustomer derive(CUSTOMER_NAME = iif(isNull(CUSTOMER_ID), 'Unknown', CUSTOMER_NAME),",
-				"          column1 = ERROR_FUNCTION('')) ~> derivedColumnCust",
+				"split@matchedRows derive(inferred_flag = iif(isNull(split@matchedRows@CUSTOMER_ID),1,0)) ~> derivedColumn2",
 				"sourceSalesDataStg keyGenerate(output(rownum as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
+				"lookup1 split(!isNull(CUSTOMER_SK),",
+				"     isNull(CUSTOMER_SK),",
+				"     disjoint: false) ~> split@(matchedRows, unmacthedRows)",
+				"split@unmacthedRows derive(PID = uuid()) ~> derivedColumn4",
 				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -118,7 +126,27 @@
 				"          DI_CREATEDDT,",
 				"          PID",
 				"     )) ~> sink",
-				"derivedColumnCust sink(allowSchemaDrift: true,",
+				"derivedColumn4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          INVOICE_SK as decimal(38,0),",
+				"          INVOICE_ID as decimal(38,0),",
+				"          CUSTOMER_ID as decimal(38,0),",
+				"          INVOICE_DT as date,",
+				"          TOTAL_PRODUCT_CNT as decimal(38,0),",
+				"          TOTAL_PRODUCT_COST as double,",
+				"          DI_CREATEDDT as timestamp,",
+				"          PID as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true) ~> sink2",
+				"derivedColumn4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          CUSTOMER_SK as decimal(38,0),",
@@ -131,16 +159,10 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
-				"     truncate:true,",
 				"     format: 'table',",
-				"     stageInsert: true,",
-				"     mapColumn(",
-				"          CUSTOMER_SK,",
-				"          CUSTOMER_ID,",
-				"          CUSTOMER_NAME,",
-				"          DI_CREATEDDT,",
-				"          PID",
-				"     )) ~> sink1"
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true) ~> sink3Dim"
 			]
 		}
 	}
