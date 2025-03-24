@@ -40,6 +40,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink3Dim"
+				},
+				{
+					"dataset": {
+						"referenceName": "customerPart1Dim",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
 				}
 			],
 			"transformations": [
@@ -173,12 +180,35 @@
 				"     format: 'table',",
 				"     stageInsert: true,",
 				"     mapColumn(",
-				"          CUSTOMER_SK = cust_sk,",
+				"          CUSTOMER_SK = rownum,",
 				"          CUSTOMER_ID = split@unmacthedRows@CUSTOMER_ID,",
 				"          CUSTOMER_NAME,",
 				"          DI_CREATEDDT,",
 				"          PID",
-				"     )) ~> sink3Dim"
+				"     )) ~> sink3Dim",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CUSTOMER_SK as decimal(38,0),",
+				"          CUSTOMER_ID as decimal(38,0),",
+				"          CUSTOMER_NAME as string,",
+				"          DI_CREATEDDT as timestamp,",
+				"          PID as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          CUSTOMER_SK = rownum,",
+				"          CUSTOMER_ID = split@matchedRows@CUSTOMER_ID,",
+				"          CUSTOMER_NAME,",
+				"          DI_CREATEDDT,",
+				"          PID",
+				"     )) ~> sink3"
 			]
 		}
 	}
