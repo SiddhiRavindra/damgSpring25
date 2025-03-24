@@ -13,7 +13,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "customerDatap1StgST",
+						"referenceName": "DimCustomerST",
 						"type": "DatasetReference"
 					},
 					"name": "sourceCustomer"
@@ -76,9 +76,11 @@
 				"     validateSchema: false,",
 				"     format: 'table') ~> sourceSalesDataStg",
 				"source(output(",
+				"          CUSTOMER_SK as decimal(38,0),",
 				"          CUSTOMER_ID as decimal(38,0),",
 				"          CUSTOMER_NAME as string,",
-				"          BILL_TO as string",
+				"          DI_CREATEDDT as timestamp,",
+				"          PID as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
